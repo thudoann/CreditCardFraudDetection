@@ -1,0 +1,69 @@
+---
+title: "Credit Card Fraud Detection"
+author: "Anh Thu"
+date: "12/14/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(ggplot2)
+library(mlbench)
+library(Hmisc)
+library(dplyr)
+```
+
+```{r}
+df <- read_csv("Credit-card-dataset/creditcard.csv")
+distinct(df)
+na.omit(df) 
+head(df)
+```
+
+```{r}
+str(df) # structure of dataset
+```
+
+
+# Class distribution
+```{r}
+hist.data.frame(df)
+```
+
+```{r}
+hist(df$Class,
+  xlab = "Class",
+  main = "Class distribution of class variable ")
+```
+```{r}
+hist(df$Time,
+  xlab = "Time",
+  main ='Histogram of Time')
+```
+```{r}
+hist(df$Amount,
+  xlab = "Amount",
+  main ='Histogram of Amount')
+```
+
+
+# Basic descriptive statistics for all attributes.
+```{r}
+summary(df)
+#Inspecting the statistics above reveals that the V1-V28 attributes are zero-centered, but this is not the case for the other two input attributes Time and Amount.
+```
+
+```{r}
+summary(df$Time)
+```
+
+```{r}
+summary(df$Amount)
+```
+
+
+
