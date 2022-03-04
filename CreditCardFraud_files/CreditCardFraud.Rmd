@@ -1,0 +1,157 @@
+---
+title: "Credit Card Fraud Detection"
+author: "Anh Thu"
+date: "12/14/2021"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(readr)
+library(sqldf)
+library(ggplot2)
+library(corrplot)
+library(ggpubr)
+library(mlbench)
+library(Hmisc)
+library(dplyr)
+library(xtable)
+```
+#Import data
+```{r}
+df <- read_csv("Credit-card-dataset/creditcard.csv")
+distinct(df)
+na.omit(df) 
+head(df)
+```
+```{r}
+df <- df %>% mutate(Fraud =case_when (Class == 0 ~ "Legitimate",
+                                          Class == 1 ~ "Fraudulent"))
+head(df)
+```
+
+
+
+```{r}
+# structure of dataset
+str(df) 
+```
+
+```{r}
+#Convert Time variable to hours
+df$Hours <- (df$Time/3600) %% 24 
+summary(df$Hours)
+```
+# Basic descriptive statistics
+```{r}
+# for all attributes
+summary(df)
+```
+
+```{r}
+summary(df$Time)
+```
+
+```{r}
+summary(df$Amount)
+```
+
+# Variables distribution
+```{r}
+hist.data.frame(df)
+```
+
+
+```{r}
+par(mfrow=c(1,2))
+hist(df$Class,
+  xlab = "Class",
+  main = "Histogram of class variable ")
+t <- table(df$Fraud)
+lbls <- paste(names(t), "\n", t, sep="")
+colors = c("red", "cyan")
+pie(t, labels = lbls, col = colors,
+   main="Pie Chart of Class variable") 
+```
+
+
+
+```{r}
+hist(df$Time,
+  xlab = "Time",
+  main ='Histogram of Time')
+```
+
+
+```{r}
+hist(df$Amount,
+  xlab = "Amount",
+  main ='Histogram of Amount')
+```
+```{r}
+ggplot(df, aes(x=Amount))+
+  scale_x_continuous()+
+  geom_density(fill = "Green", alpha = 0.2)+
+  theme_minimal()+
+  labs(title = "Distribution of Amount")+
+  xlim(0,1000)
+```
+
+
+```{r}
+p <- ggplot(df, aes(x = as.character(Fraud), y = Amount, col=Time)) + geom_boxplot() + ggtitle("Distribution of transaction amounts by Class") + xlab("Class") + ylab("Amount")
+p
+```
+
+```{r}
+ggplot(df,aes(y=Amount,x=Hours,col=Fraud))+geom_point()+facet_grid(~Fraud)
+```
+
+```{r}
+amount <- df %>% group_by(Fraud) %>% summarise(mean(Amount), median(Amount), sd(Amount))
+xtable(amount)
+```
+
+
+
+
+```{r}
+t.test(Amount~Class,df)
+```
+
+#Identifying correlations in the variables
+```{r}
+#Visual inspection of the data normality using Q-Q plots
+ggqqplot(df$Amount, ylab = "Amount")
+ggqqplot(df$Time, ylab = "Time")
+ggqqplot(df$Class, ylab = "Class")
+
+```
+
+```{r}
+library("FactoMineR")
+library("factoextra")
+df_active <- df[,c("Class", "Time","Amount")]
+res.pca <- PCA(df_active, graph= FALSE)
+fviz_pca_ind(res.pca,
+             geom.ind = "point", # show points only (nbut not "text")
+             col.ind = df$Fraud, # color by groups
+             palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+             addEllipses = TRUE, # Concentration ellipses
+             legend.title = "fraud",
+             select.ind = list(contrib=500)
+             )
+```
+
+
+```{r}
+corrplot(cor(df[,c(-1,-30,-31)]))
+```
+
