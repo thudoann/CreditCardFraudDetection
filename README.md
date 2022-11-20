@@ -6,4 +6,4 @@
 
 * Used Pipeline and GridearchCV to find the best hyperparameters for different models.
 
-* Evaluted the best model as result
+* Evaluted the best model as result.
