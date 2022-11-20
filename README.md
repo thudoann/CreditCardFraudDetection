@@ -4,4 +4,6 @@
 
 * Explore the interactions and correlations between features then visualize them.
 
-* Used Pipeline and GriSearchCV to find the best hyperparameters of the best model
+* Used Pipeline and GridearchCV to find the best hyperparameters for different models.
+
+* Evaluted the best model as result
